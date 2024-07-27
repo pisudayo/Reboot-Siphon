@@ -1391,9 +1391,33 @@ void AFortPlayerController::ClientOnPawnDiedHook(AFortPlayerController* PlayerCo
 				}); */
 
 			// KillerPlayerState->OnRep_Kills();
+			FGameplayTag Tag{};
+			Tag.TagName = UKismetStringLibrary::Conv_StringToName(TEXT("GameplayCue.Shield.PotionConsumed"));
+
+			auto Handle = KillerPlayerState->GetAbilitySystemComponent()->MakeEffectContext();
+
+			auto NetMulticast_InvokeGameplayCueAdded = FindObject<UFunction>(L"/Script/GameplayAbilities.AbilitySystemComponent:NetMulticast_InvokeGameplayCueAdded");
+			auto NetMulticast_InvokeGameplayCueExecuted = FindObject<UFunction>(L"/Script/GameplayAbilities.AbilitySystemComponent:NetMulticast_InvokeGameplayCueExecuted");
+
+			static auto GameplayCueTagOffsetAdded = NetMulticast_InvokeGameplayCueAdded->GetOffsetFunc("GameplayCueTag");
+			static auto GameplayCueTagOffsetExecuted = NetMulticast_InvokeGameplayCueExecuted->GetOffsetFunc("GameplayCueTag");
+			static auto PredictionKeyOffsetAdded = NetMulticast_InvokeGameplayCueAdded->GetOffsetFunc("PredictionKey");
+
+			auto AddedParams = Alloc<void>(NetMulticast_InvokeGameplayCueAdded->GetPropertiesSize());
+			auto ExecutedParams = Alloc<void>(NetMulticast_InvokeGameplayCueExecuted->GetPropertiesSize());
+
+			*(FGameplayTag*)(int64(AddedParams) + GameplayCueTagOffsetAdded) = Tag;
+			*(FGameplayTag*)(int64(ExecutedParams) + GameplayCueTagOffsetExecuted) = Tag;
+
+
+			KillerPlayerState->GetAbilitySystemComponent()->ProcessEvent(NetMulticast_InvokeGameplayCueAdded, AddedParams);
+			KillerPlayerState->GetAbilitySystemComponent()->ProcessEvent(NetMulticast_InvokeGameplayCueExecuted, ExecutedParams);
+
 		}
 
 		// LOG_INFO(LogDev, "Reported kill.");
+
+		
 
 		if (AmountOfHealthSiphon != 0)
 		{
