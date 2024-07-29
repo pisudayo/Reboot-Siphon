@@ -48,7 +48,7 @@ void AFortPlayerController::ClientEquipItem(const FGuid& ItemGuid, bool bForceEx
 			FGuid                                       ItemGuid;                                                 // (ConstParm, Parm, ZeroConstructor, ReferenceParm, IsPlainOldData, NoDestructor, HasGetValueTypeHash, NativeAccessSpecifierPublic)
 			bool                                               bForceExecution;                                          // (Parm, ZeroConstructor, IsPlainOldData, NoDestructor, HasGetValueTypeHash, NativeAccessSpecifierPublic)
 		} AFortPlayerController_ClientEquipItem_Params{ ItemGuid, bForceExecution };
-
+ 
 		this->ProcessEvent(ClientEquipItemFn, &AFortPlayerController_ClientEquipItem_Params);
 	}
 }
@@ -1396,8 +1396,8 @@ void AFortPlayerController::ClientOnPawnDiedHook(AFortPlayerController* PlayerCo
 
 			auto Handle = KillerPlayerState->GetAbilitySystemComponent()->MakeEffectContext();
 
-			auto NetMulticast_InvokeGameplayCueAdded = FindObject<UFunction>(L"/Script/GameplayAbilities.AbilitySystemComponent:NetMulticast_InvokeGameplayCueAdded");
-			auto NetMulticast_InvokeGameplayCueExecuted = FindObject<UFunction>(L"/Script/GameplayAbilities.AbilitySystemComponent:NetMulticast_InvokeGameplayCueExecuted");
+			static auto NetMulticast_InvokeGameplayCueAdded = FindObject<UFunction>(L"/Script/GameplayAbilities.AbilitySystemComponent:NetMulticast_InvokeGameplayCueAdded");
+			static auto NetMulticast_InvokeGameplayCueExecuted = FindObject<UFunction>(L"/Script/GameplayAbilities.AbilitySystemComponent:NetMulticast_InvokeGameplayCueExecuted");
 
 			static auto GameplayCueTagOffsetAdded = NetMulticast_InvokeGameplayCueAdded->GetOffsetFunc("GameplayCueTag");
 			static auto GameplayCueTagOffsetExecuted = NetMulticast_InvokeGameplayCueExecuted->GetOffsetFunc("GameplayCueTag");
