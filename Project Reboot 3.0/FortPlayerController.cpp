@@ -1421,7 +1421,8 @@ void AFortPlayerController::ClientOnPawnDiedHook(AFortPlayerController* PlayerCo
 			static auto Metal = FindObject<UFortItemDefinition>(L"/Game/Items/ResourcePickups/MetalItemData.MetalItemData");
 
 			KillerController->GetWorldInventory()->AddItem(Wood, nullptr, 200, -1, true);
-			KillerController->GetWorldInventory()->AddItem(Wood, nullptr, 200, -1, true);
+			KillerController->GetWorldInventory()->AddItem(Stone, nullptr, 200, -1, true);
+			KillerController->GetWorldInventory()->AddItem(Metal, nullptr, 200, -1, true);
 		}
 
 		// LOG_INFO(LogDev, "Reported kill.");
