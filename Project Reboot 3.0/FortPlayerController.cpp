@@ -1291,6 +1291,7 @@ void AFortPlayerController::ClientOnPawnDiedHook(AFortPlayerController* PlayerCo
 	auto DeadPlayerState = Cast<AFortPlayerStateAthena>(PlayerController->GetPlayerState());
 	auto KillerPawn = Cast<AFortPlayerPawn>(*(AFortPawn**)(__int64(DeathReport) + MemberOffsets::DeathReport::KillerPawn));
 	auto KillerPlayerState = Cast<AFortPlayerStateAthena>(*(AFortPlayerState**)(__int64(DeathReport) + MemberOffsets::DeathReport::KillerPlayerState));
+	auto KillerController = Cast<AFortPlayerControllerAthena>(KillerPawn->GetController());
 
 	if (!DeadPawn || !GameState || !DeadPlayerState)
 		return ClientOnPawnDiedOriginal(PlayerController, DeathReport);
@@ -1391,7 +1392,9 @@ void AFortPlayerController::ClientOnPawnDiedHook(AFortPlayerController* PlayerCo
 				}); */
 
 			// KillerPlayerState->OnRep_Kills();
-			FGameplayTag Tag{};
+
+			// unsure if this should be static
+			static FGameplayTag Tag{};
 			Tag.TagName = UKismetStringLibrary::Conv_StringToName(TEXT("GameplayCue.Shield.PotionConsumed"));
 
 			auto Handle = KillerPlayerState->GetAbilitySystemComponent()->MakeEffectContext();
@@ -1413,6 +1416,12 @@ void AFortPlayerController::ClientOnPawnDiedHook(AFortPlayerController* PlayerCo
 			KillerPlayerState->GetAbilitySystemComponent()->ProcessEvent(NetMulticast_InvokeGameplayCueAdded, AddedParams);
 			KillerPlayerState->GetAbilitySystemComponent()->ProcessEvent(NetMulticast_InvokeGameplayCueExecuted, ExecutedParams);
 
+			static auto Wood = FindObject<UFortItemDefinition>(L"/Game/Items/ResourcePickups/WoodItemData.WoodItemData");
+			static auto Stone = FindObject<UFortItemDefinition>(L"/Game/Items/ResourcePickups/StoneItemData.StoneItemData");
+			static auto Metal = FindObject<UFortItemDefinition>(L"/Game/Items/ResourcePickups/MetalItemData.MetalItemData");
+
+			KillerController->GetWorldInventory()->AddItem(Wood, nullptr, 200, -1, true);
+			KillerController->GetWorldInventory()->AddItem(Wood, nullptr, 200, -1, true);
 		}
 
 		// LOG_INFO(LogDev, "Reported kill.");
